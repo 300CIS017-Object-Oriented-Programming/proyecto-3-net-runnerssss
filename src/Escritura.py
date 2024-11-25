@@ -1,7 +1,6 @@
 import pandas as pd
 
 class Lectura:
-    
     def generar_archivo(self, ruta_archivo: str, datos: pd.DataFrame) -> bool:
         raise NotImplementedError
 

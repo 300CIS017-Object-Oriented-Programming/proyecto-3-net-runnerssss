@@ -1,22 +1,17 @@
 import pandas as pd
-from Escritura import LecturaXLSX
-from Settings import Settings
+from .Escritura import LecturaXLSX
+from .Settings import Settings
 
 
 class ControladorSNIES:
     def __init__(self):
-        self.data_principal = pd.DataFrame()  # DataFrame consolidado
+        self.data_principal = pd.DataFrame()
         self.lector_xlsx = LecturaXLSX()
         self.encabezados_columnas = []
-        self.ruta_admitidos = Settings.ADMITIDOS_FILE_PATH
-        self.ruta_graduados = Settings.GRADUADOS_FILE_PATH
-        self.ruta_inscritos = Settings.INSCRITOS_FILE_PATH
-        self.ruta_matriculados = Settings.MATRICULADOS_FILE_PATH
-        self.ruta_matriculados_primer_curso = Settings.MATRICULADOS_PRIMER_CURSO_FILE_PATH
+        self.paths = Settings()
 
     def manejar_datos(self, inicio, fin, filtro):
         try:
-            # Conversión y validación de años
             anio_inicio = int(inicio)
             anio_fin = int(fin)
             rango_anios = list(range(min(anio_inicio, anio_fin), max(anio_inicio, anio_fin) + 1))
@@ -26,11 +21,11 @@ class ControladorSNIES:
 
             for anio in rango_anios:
                 rutas_archivos = [
-                    Settings.RUTA_ADMITIDOS,
-                    Settings.RUTA_GRADUADOS,
-                    Settings.RUTA_INSCRITOS,
-                    Settings.RUTA_MATRICULADOS,
-                    Settings.RUTA_PRIMERA_MATRICULA
+                    self.paths.files['admitidos'],
+                    self.paths.files['graduados'],
+                    self.paths.files['inscritos'],
+                    self.paths.files['matriculados'],
+                    self.paths.files['matriculados_primer']
                 ]
 
                 for ruta in rutas_archivos:
@@ -55,11 +50,9 @@ class ControladorSNIES:
                             how="left"
                         )
 
-
         except FileNotFoundError:
             raise FileNotFoundError("No se encontró alguno de los archivos necesarios para el procesamiento.")
         except Exception as error:
             raise Exception(f"Error procesando los datos: {error}")
 
         return self.data
-

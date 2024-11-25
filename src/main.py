@@ -12,8 +12,6 @@ def app():
     st.video(url_video)
 
 
-
-
     st.header("¿Qué deseas hacer?")
     url_imagen = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.bioguia.com%2Ftendencias%2Fcuriosidad-cualidades-esenciales-tener-exito_35219107.html&psig=AOvVaw3AtYUwigUx8nx_MQ58nW3R&ust=1732590635459000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOivxbHB9okDFQAAAAAdAAAAABAE"
     st.image(url_imagen)
