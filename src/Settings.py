@@ -2,7 +2,6 @@ class Settings:
     # Ruta base para los archivos
     BASE_PATH = "D:\Documentos\Desktop\Tareas POO\proyecto-2-snies-extractor-net-runnersss\docs\inputs"
 
-    # Rutas a los diferentes archivos
     ADMITIDOS_FILE_PATH = BASE_PATH + "Admitidos "
     GRADUADOS_FILE_PATH = BASE_PATH + "Graduados "
     INSCRITOS_FILE_PATH = BASE_PATH + "Inscritos "
