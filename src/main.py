@@ -1,12 +1,7 @@
-
 import Escritura
 from Settings import Settings
 import streamlit as st
 import pandas as pd
-
-
-
-
 
 def app():
     st.title("SNIES")

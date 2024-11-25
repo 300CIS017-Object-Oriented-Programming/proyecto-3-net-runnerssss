@@ -1,18 +1,18 @@
 import pandas as pd
-from Escritura import LecturaXlsx
+from Escritura import LecturaXLSX
 from Settings import Settings
 
 
 class ControladorSNIES:
     def __init__(self):
         self.data_principal = pd.DataFrame()  # DataFrame consolidado
-        self.lector_xlsx = LecturaXlsx()
+        self.lector_xlsx = LecturaXLSX()
         self.encabezados_columnas = []
-        self.ruta_admitidos = Settings.RUTA_ADMITIDOS
-        self.ruta_graduados = Settings.RUTA_GRADUADOS
-        self.ruta_inscritos = Settings.RUTA_INSCRITOS
-        self.ruta_matriculados = Settings.RUTA_MATRICULADOS
-        self.ruta_primera_matricula = Settings.RUTA_PRIMERA_MATRICULA
+        self.ruta_admitidos = Settings.ADMITIDOS_FILE_PATH
+        self.ruta_graduados = Settings.GRADUADOS_FILE_PATH
+        self.ruta_inscritos = Settings.INSCRITOS_FILE_PATH
+        self.ruta_matriculados = Settings.MATRICULADOS_FILE_PATH
+        self.ruta_matriculados_primer_curso = Settings.MATRICULADOS_PRIMER_CURSO_FILE_PATH
 
     def manejar_datos(self, inicio, fin, filtro):
         try:
@@ -22,7 +22,7 @@ class ControladorSNIES:
             rango_anios = list(range(min(anio_inicio, anio_fin), max(anio_inicio, anio_fin) + 1))
 
             primero = True
-            lector_archivos = LecturaXlsx()
+            lector_archivos = LecturaXLSX()
 
             for anio in rango_anios:
                 rutas_archivos = [
