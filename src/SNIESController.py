@@ -1,5 +1,5 @@
 import pandas as pd
-from Lectura import LecturaXlsx
+from Escritura import LecturaXlsx
 from Settings import Settings
 
 
@@ -55,9 +55,11 @@ class ControladorSNIES:
                             how="left"
                         )
 
+
         except FileNotFoundError:
             raise FileNotFoundError("No se encontró alguno de los archivos necesarios para el procesamiento.")
         except Exception as error:
             raise Exception(f"Error procesando los datos: {error}")
 
         return self.data
+
