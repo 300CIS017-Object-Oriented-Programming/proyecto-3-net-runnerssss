@@ -1,6 +1,6 @@
 class Settings:
     # Ruta base para los archivos
-    BASE_PATH = "C:/Users/Usuario/Documents/Proyecto/proyecto-3-yabastapoorfavor/INPUTS/Carpetas/"
+    BASE_PATH = "D:\Documentos\Desktop\Tareas POO\proyecto-2-snies-extractor-net-runnersss\docs\inputs"
 
     # Rutas a los diferentes archivos
     ADMITIDOS_FILE_PATH = BASE_PATH + "Admitidos "
@@ -8,7 +8,7 @@ class Settings:
     INSCRITOS_FILE_PATH = BASE_PATH + "Inscritos "
     MATRICULADOS_FILE_PATH = BASE_PATH + "Matriculados "
     MATRICULADOS_PRIMER_CURSO_FILE_PATH = BASE_PATH + "Matriculados Primer Curso "
-    OUTPUTS_PATH = "C:/Users/Usuario/Documents/Proyecto/proyecto-3-yabastapoorfavor/OUTPUTS/"
+    OUTPUTS_PATH = "D:\Documentos\Desktop\Tareas POO\proyecto-2-snies-extractor-net-runnersss\docs\outputs"
 
 
 
