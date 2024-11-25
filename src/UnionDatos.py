@@ -1,5 +1,5 @@
 from typing import List
-from programaAcademico import ProgramaAcademico
+from ProgramaAcademico import ProgramaAcademico
 from DatosInstitucion import DatosInstitucion
 from Consolidado import Consolidado
 
