@@ -1,8 +1,8 @@
-from distutils.command.install import value
+
 import Escritura
 import streamlit as st
 import pandas as pd
-from streamlit import select_slider
+
 
 
 def app():
@@ -14,7 +14,7 @@ def app():
         st.video(url_video)
 
         st.header("¿Que deseas hacer?")
-        url_imagen = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.bioguia.com%2Ftendencias%2Fcuriosidad-cualidades-esenciales-tener-exito_35219107.html&psig=AOvVaw3AtYUwigUx8nx_MQ58nW3R&ust=1732590635459000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOivxbHB9okDFQAAAAAdAAAAABAE"
+        url_imagen = "https://www.pilarjerico.com/wp-content/uploads/1541329432_485628_1541379048_noticia_normal_recorte1-1080x675.jpg"
         st.image(url_imagen)
 
         if "comprobante" not in st.session_state:
@@ -29,7 +29,7 @@ def app():
                 else:
                         st.write("No se ha subido ningún archivo aún.")
         elif eleccion == "Filtrar por año":
-                anio = st.select_slider("Selecciona el año para filtrar", options = ["2021","2022", "2023"], value = "2021")
+                anio = st.select_slider("Selecciona el año para filtrar", options = ["2021","2022", "2023"])
                 #se llama a la funcion filtrado por anio
                 eleccion_archivo = st.selectbox("Desea usar el archivo subido o el de default", ("Subido", "Default"))
                 if eleccion_archivo == "Subido":
@@ -44,7 +44,7 @@ def app():
                         print("funcion con el archivo de default")
                         tipo_dato()# va el archivo
 
-        elif eleccion == "filtrar por palabra":
+        elif eleccion == "Filtrar por palabra":
                 st.subheader("Escribe la palabra para filtrar")
                 entrada_usuario = st.text_input("Palabra: ")
                 #se llama a la  funcion filtrado plabra
@@ -103,3 +103,5 @@ def tipo_dato(archivo):
                         print("funcion con el tipo de dato")
         else:
                 st.success("Esta bien")
+
+app()
