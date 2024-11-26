@@ -1,47 +1,45 @@
 import streamlit as st
 import pandas as pd
-from utils import filtrar_por_anio, filtrar_por_palabra, tipo_dato
+from datetime import datetime
 
 
 def filtros(controlador):
-    st.title("Filtros")
+    # Configuración de la página
+    st.set_page_config(page_title="Selector de Rango de Años", layout="wide")
 
-    tipo_filtro = st.radio(
-        "Selecciona el tipo de filtro",
-        ["Rango de Años", "Palabras Clave"]
-    )
+    # Título de la aplicación
+    st.title("Selector de Rango de Años")
 
-    if tipo_filtro == "Rango de Años":
-        st.subheader("Filtrar por Año")
-        anio = st.select_slider("Selecciona el año para filtrar",
-                                options=["2020","2021", "2022", "2023"],
-                                value="2021")
-        archivo = st.session_state.archivo_subido
-        df_filtrado = filtrar_por_anio(archivo, anio)
+    # Obtenemos el año actual
+    current_year = datetime.now().year
 
-        if not df_filtrado.empty:
-            st.success(f"Resultados encontrados para el año {anio}")
-            st.dataframe(df_filtrado)
-            tipo_dato(df_filtrado)
-        else:
-            st.warning(f"No se encontraron resultados para el año {anio}")
+    # Creamos dos columnas para los selectores
+    col1, col2 = st.columns(2)
 
+    with col1:
+        # Selector para el año inicial
+        start_year = st.number_input(
+            "Año inicial",
+            min_value=2000,
+            max_value=2023,
+            value=2020,
+            step=1
+        )
+
+    with col2:
+        # Selector para el año final
+        end_year = st.number_input(
+            "Año final",
+            min_value=2000,
+            max_value=2023,
+            value=2023,
+            step=1
+        )
+
+    # Validación del rango
+    if start_year > end_year:
+        st.error("El año inicial no puede ser mayor que el año final")
     else:
-        st.subheader("Palabras Clave")
-        entrada_usuario = st.text_input("Escribe la palabra para filtrar:")
-        columna = st.text_input("Indica la columna a filtrar (por defecto: Nombre):",
-                                value="Nombre")
-
-        if entrada_usuario:
-            archivo = st.session_state.archivo_subido
-            df_filtrado = filtrar_por_palabra(archivo, entrada_usuario, columna)
-
-            if not df_filtrado.empty:
-                st.success(f"Resultados encontrados para: '{entrada_usuario}' en la columna '{columna}'")
-                st.dataframe(df_filtrado)
-                tipo_dato(df_filtrado)
-            else:
-                st.warning(f"No se encontraron resultados para: '{entrada_usuario}' en la columna '{columna}'")
-
+        st.success(f"Rango seleccionado: {start_year} - {end_year}")
 
 filtros(st.session_state.controlador)
