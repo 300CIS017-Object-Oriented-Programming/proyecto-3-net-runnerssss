@@ -7,6 +7,7 @@ class Settings:
         self.BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.inputs_dir = os.path.join(self.BASE_PATH, 'docs', 'inputs')
         self.outputs_dir = os.path.join(self.BASE_PATH, 'docs', 'outputs')
+
         self.files = {
             'admitidos': os.path.join(self.inputs_dir, 'admitidos'),
             'graduados': os.path.join(self.inputs_dir, 'graduados'),
@@ -15,7 +16,7 @@ class Settings:
             'matriculados_primer': os.path.join(self.inputs_dir, 'matriculadosprimersemestre')
         }
 
-        # Columnas que se quieren leer de los archivos
+        # Columnas que se quieren leer de los archivos programas académicos
         self.columns_to_read = [
             'CÓDIGO DE LA INSTITUCIÓN',
             'IES_PADRE',
@@ -53,6 +54,21 @@ class Settings:
             'MUNICIPIO DE OFERTA DEL PROGRAMA'
         ]
 
+        # Columnas que se quieren leer de los archivos programas académicos
+        self.consolidados = [
+            'ID SEXO',
+            'SEXO',
+            'AÑO',
+            'SEMESTRE',
+            'ADMITIDOS',
+            'GRADUADOS',
+            'INSCRITOS',
+            'MATRICULADOS',
+            'PRIMER CURSO',
+            'MATRICULADOS PRIMER CURSO',
+            'CÓDIGO SNIES DEL PROGRAMA',
+            'CÓDIGO DEL MUNICIPIO (PROGRAMA)'
+        ]
         # Delimitador para archivos CSV
         self.DELIMITADOR = ';'
         self.COLUMNAS_INFO_CONSOLIDADOS = 8
@@ -66,3 +82,5 @@ class Settings:
 
     def get_columns(self):
         return self.columns_to_read
+    def get_consolidados(self):
+        return self.consolidados

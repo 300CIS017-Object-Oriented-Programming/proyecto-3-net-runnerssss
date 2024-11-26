@@ -1,119 +1,75 @@
 import streamlit as st
 import pandas as pd
+import os
 from datetime import datetime
 from src.util.Settings import Settings
+from src.model.Lectura_Archivos import leer_excel, filtrar_duplicados
 
 
-def procesar_rango_anios(start_year, end_year, settings):
+def consolidar_datos_por_tipo(start_year: int, end_year: int, nombre_archivo: str) -> pd.DataFrame:
     """
-    Procesa los archivos Excel para el rango de años especificado.
+    Consolida datos de varios años para un tipo de archivo específico.
 
     Args:
-        start_year (int): Año inicial
-        end_year (int): Año final
-        settings (Settings): Objeto de configuración con las rutas base y columnas
+        start_year: Año inicial
+        end_year: Año final
+        nombre_archivo: Tipo de archivo ('inscritos' o 'admitidos')
 
     Returns:
-        pandas.DataFrame: DataFrame combinado y procesado
+        DataFrame consolidado
     """
+    settings = Settings()
     dfs = []
 
-    # Obtener las columnas desde settings
-    columnas = settings.get_columns()
+    for year in range(start_year, end_year + 1):
+        ruta_archivo = f"{settings.files[nombre_archivo]}{year}.xlsx"
+        try:
+            df = leer_excel(ruta_archivo, settings.get_consolidados())
+            df['AÑO'] = year
+            dfs.append(df)
+        except Exception as e:
+            print(f"Error procesando archivo del año {year}: {str(e)}")
 
-    for anio in range(start_year, end_year + 1):
-        ruta_admitidos = f"{settings.files['admitidos']}{anio}.xlsx"
+    if not dfs:
+        raise ValueError("No se pudo procesar ningún archivo")
 
-        # Leer el archivo del año actual con las columnas definidas en settings
-        df_anio = leer_excel(ruta_admitidos, columnas)
-
-    # Combinar todos los DataFrames
-    if dfs:
-        df_combinado = pd.concat(dfs, ignore_index=True)
-        # Filtrar duplicados del DataFrame combinado
-        df_final = filtrar_duplicados(df_combinado)
-        return df_final
-    return None
+    return pd.concat(dfs, ignore_index=True)
 
 
-def filtros(controlador):
-    # Configuración de la página
-    st.set_page_config(page_title="Selector de Rango de Años", layout="wide")
-
-    # Título de la aplicación
-    st.title("Selector de Rango de Años")
-
-    # Creamos dos columnas para los selectores
-    col1, col2 = st.columns(2)
-
-    with col1:
-        # Selector para el año inicial
-        start_year = st.number_input(
-            "Año inicial",
-            min_value=2000,
-            max_value=2023,
-            value=2020,
-            step=1
-        )
-
-    with col2:
-        # Selector para el año final
-        end_year = st.number_input(
-            "Año final",
-            min_value=2000,
-            max_value=2023,
-            value=2023,
-            step=1
-        )
-
-    # Validación del rango
-    if start_year > end_year:
-        st.error("El año inicial no puede ser mayor que el año final")
-        return
-
-    st.success(f"Rango seleccionado: {start_year} - {end_year}")
-
-    # Botón para procesar los datos
-    if st.button("Procesar datos"):
-        with st.spinner("Procesando datos..."):
-            df_resultado = procesar_rango_anios(start_year, end_year, controlador)
-
-            if df_resultado is not None:
-                st.write("Datos procesados exitosamente:")
-                st.dataframe(df_resultado)
-            else:
-                st.error("No se pudieron procesar los datos para el rango seleccionado")
-
-
-def leer_excel(ruta_archivo, columnas=None):
-    """
-    Lee un archivo Excel seleccionando solo las columnas especificadas.
-    """
+def main():
     try:
-        df = pd.read_excel(ruta_archivo, usecols=columnas)
-        return df
-    except FileNotFoundError:
-        st.error(f"No se encontró el archivo en la ruta: {ruta_archivo}")
-        return None
-    except ValueError as ve:
-        st.error(f"Error con las columnas especificadas: {str(ve)}")
-        return None
+        # Procesar datos de inscritos
+        inscritos = consolidar_datos_por_tipo(2020, 2022, "inscritos")
+        inscritos = filtrar_duplicados(inscritos)
+
+        # Procesar datos de admitidos
+        admitidos = consolidar_datos_por_tipo(2020, 2022, "admitidos")
+        admitidos = filtrar_duplicados(admitidos)
+
+        # Verificar tipos de datos antes del merge
+        print("\nTipos de datos en inscritos:")
+        print(inscritos.dtypes)
+        print("\nTipos de datos en admitidos:")
+        print(admitidos.dtypes)
+
+        # Combinar datos
+        merged_df = pd.merge(
+            inscritos,
+            admitidos,
+            on=['CÓDIGO SNIES DEL PROGRAMA', 'CÓDIGO DEL MUNICIPIO (PROGRAMA)'],
+            suffixes=('_inscritos', '_admitidos')
+        )
+
+        # Mostrar resultados
+        print("\nDatos consolidados:")
+        print(merged_df)
+
+        return merged_df
+
     except Exception as e:
-        st.error(f"Error al leer el archivo: {str(e)}")
+        print(f"Error en el procesamiento: {str(e)}")
         return None
-
-
-def filtrar_duplicados(df):
-    """
-    Filtra las filas duplicadas basándose en las columnas especificadas.
-    """
-    if df is None:
-        return None
-
-    columnas_filtro = ['CÓDIGO SNIES DEL PROGRAMA', 'CÓDIGO DEL MUNICIPIO (PROGRAMA)']
-    df_filtrado = df.drop_duplicates(subset=columnas_filtro, keep='first')
-    return df_filtrado
 
 
 if __name__ == "__main__":
-    filtros(st.session_state.controlador)
+    main()
