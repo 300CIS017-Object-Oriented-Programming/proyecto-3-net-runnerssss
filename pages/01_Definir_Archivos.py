@@ -15,7 +15,7 @@ def definir_archivos(controlador):
     st.title("Definir Archivos")
 
     # Mostrar archivos existentes
-    input_path = "inputs"
+    input_path = "./src/docs/inputs"
     files = os.listdir(input_path)
     if files:
         st.subheader("Archivos existentes:")

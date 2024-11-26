@@ -1,90 +1,119 @@
-class Consolidado:
-    def __init__(self):
-        self._id_sexo = ""
-        self._sexo = ""
-        self._ano = ""
-        self._semestre = ""
-        self._inscritos = ""
-        self._admitidos = ""
-        self._matriculados = ""
-        self._matriculados_primer_semestre = ""
-        self._graduados = ""
+import streamlit as st
+import pandas as pd
+from datetime import datetime
+from src.util.Settings import Settings
 
-    # Métodos getter y setter
-    @property
-    def id_sexo(self):
-        return self._id_sexo
 
-    @id_sexo.setter
-    def id_sexo(self, value):
-        self._id_sexo = value
+def procesar_rango_anios(start_year, end_year, settings):
+    """
+    Procesa los archivos Excel para el rango de años especificado.
 
-    @property
-    def sexo(self):
-        return self._sexo
+    Args:
+        start_year (int): Año inicial
+        end_year (int): Año final
+        settings (Settings): Objeto de configuración con las rutas base y columnas
 
-    @sexo.setter
-    def sexo(self, value):
-        self._sexo = value
+    Returns:
+        pandas.DataFrame: DataFrame combinado y procesado
+    """
+    dfs = []
 
-    @property
-    def ano(self):
-        return self._ano
+    # Obtener las columnas desde settings
+    columnas = settings.get_columns()
 
-    @ano.setter
-    def ano(self, value):
-        self._ano = value
+    for anio in range(start_year, end_year + 1):
+        ruta_admitidos = f"{settings.files['admitidos']}{anio}.xlsx"
 
-    @property
-    def semestre(self):
-        return self._semestre
+        # Leer el archivo del año actual con las columnas definidas en settings
+        df_anio = leer_excel(ruta_admitidos, columnas)
 
-    @semestre.setter
-    def semestre(self, value):
-        self._semestre = value
+    # Combinar todos los DataFrames
+    if dfs:
+        df_combinado = pd.concat(dfs, ignore_index=True)
+        # Filtrar duplicados del DataFrame combinado
+        df_final = filtrar_duplicados(df_combinado)
+        return df_final
+    return None
 
-    @property
-    def inscritos(self):
-        return self._inscritos
 
-    @inscritos.setter
-    def inscritos(self, value):
-        self._inscritos = value
+def filtros(controlador):
+    # Configuración de la página
+    st.set_page_config(page_title="Selector de Rango de Años", layout="wide")
 
-    @property
-    def admitidos(self):
-        return self._admitidos
+    # Título de la aplicación
+    st.title("Selector de Rango de Años")
 
-    @admitidos.setter
-    def admitidos(self, value):
-        self._admitidos = value
+    # Creamos dos columnas para los selectores
+    col1, col2 = st.columns(2)
 
-    @property
-    def matriculados(self):
-        return self._matriculados
+    with col1:
+        # Selector para el año inicial
+        start_year = st.number_input(
+            "Año inicial",
+            min_value=2000,
+            max_value=2023,
+            value=2020,
+            step=1
+        )
 
-    @matriculados.setter
-    def matriculados(self, value):
-        self._matriculados = value
+    with col2:
+        # Selector para el año final
+        end_year = st.number_input(
+            "Año final",
+            min_value=2000,
+            max_value=2023,
+            value=2023,
+            step=1
+        )
 
-    @property
-    def matriculados_primer_semestre(self):
-        return self._matriculados_primer_semestre
+    # Validación del rango
+    if start_year > end_year:
+        st.error("El año inicial no puede ser mayor que el año final")
+        return
 
-    @matriculados_primer_semestre.setter
-    def matriculados_primer_semestre(self, value):
-        self._matriculados_primer_semestre = value
+    st.success(f"Rango seleccionado: {start_year} - {end_year}")
 
-    @property
-    def graduados(self):
-        return self._graduados
+    # Botón para procesar los datos
+    if st.button("Procesar datos"):
+        with st.spinner("Procesando datos..."):
+            df_resultado = procesar_rango_anios(start_year, end_year, controlador)
 
-    @graduados.setter
-    def graduados(self, value):
-        self._graduados = value
+            if df_resultado is not None:
+                st.write("Datos procesados exitosamente:")
+                st.dataframe(df_resultado)
+            else:
+                st.error("No se pudieron procesar los datos para el rango seleccionado")
 
-    def imprimir(self):
-        print(f"Sexo: {self._sexo}, Año: {self._ano}, Semestre: {self._semestre}, "
-              f"Inscritos: {self._inscritos}, Admitidos: {self._admitidos}, "
-              f"Matriculados: {self._matriculados}, Graduados: {self._graduados}, "
-              f"Matriculados Primer Semestre: {self._matriculados_primer_semestre}")
+
+def leer_excel(ruta_archivo, columnas=None):
+    """
+    Lee un archivo Excel seleccionando solo las columnas especificadas.
+    """
+    try:
+        df = pd.read_excel(ruta_archivo, usecols=columnas)
+        return df
+    except FileNotFoundError:
+        st.error(f"No se encontró el archivo en la ruta: {ruta_archivo}")
+        return None
+    except ValueError as ve:
+        st.error(f"Error con las columnas especificadas: {str(ve)}")
+        return None
+    except Exception as e:
+        st.error(f"Error al leer el archivo: {str(e)}")
+        return None
+
+
+def filtrar_duplicados(df):
+    """
+    Filtra las filas duplicadas basándose en las columnas especificadas.
+    """
+    if df is None:
+        return None
+
+    columnas_filtro = ['CÓDIGO SNIES DEL PROGRAMA', 'CÓDIGO DEL MUNICIPIO (PROGRAMA)']
+    df_filtrado = df.drop_duplicates(subset=columnas_filtro, keep='first')
+    return df_filtrado
+
+
+if __name__ == "__main__":
+    filtros(st.session_state.controlador)
