@@ -3,8 +3,10 @@ import streamlit as st
 
 import os
 
-import plotly.express as px
+#import plotly.express as px
 
+st.set_page_config(page_title="SNIES-Extractor", page_icon="📊️", layout="wide",
+                       initial_sidebar_state="expanded")
 
 def iniciar_programa():
 
@@ -12,14 +14,12 @@ def iniciar_programa():
     if 'controlador' not in st.session_state:
         st.session_state.controlador = ControladorSNIES()
 
-    st.set_page_config(page_title="SNIES-Extractor", page_icon="📊️", layout="wide",
-                       initial_sidebar_state="expanded")
 
     st.title("SNIES")
     st.header("Bienvenido a SNIES-Extractor, tu gestionador de confianza")
-    pestana1, pestana2, pestana3 = st.tabs(["🏠 Inicio ", "📤 Subir Archivos", "📊 Ver Datos"])
+    pestana1, pestana2, pestana3, pestana4, pestana5, pestana6 = st.tabs(["🏠 Inicio ", "📤 Subir Archivos", "📊 Ver Datos", "⌛ Filtrado año", "📈 Datos adicionales", "✏️ Escritura"])
 
-    DIRECCION_INPUTS = r"C:\Users\juanj\Desktop\J.J trabajos\U\Tercer semestre\proyecto-3-net-runnerssss\src\docs\inputs>"
+    DIRECCION_INPUTS = r"C:\Users\juanj\Desktop\J.J trabajos\U\Tercer semestre\proyecto-3-net-runnerssss\src\docs\inputs"
 
     if "user_name" not in st.session_state:
         st.session_state.user_name = ""
@@ -94,10 +94,25 @@ def iniciar_programa():
                 st.markdown(f"- {file}")
 
 
+    with pestana4:
+        opcion = st.select_slider("Selecciona el año ",options=["2021", "2022", "2023"])
+        #
+    with pestana5:
+        st.subheader("¿Que datos adicionales desea ver?")
+        eleccion = st.selectbox("Eleccion",["Porcentaje de nuevos matriculados", "Carreras sin matriculas nuevas"])
 
 
-    #Graficos para los datos luegos de ser analizados por la funcion de leer, reciben el dataframe
-    """
+
+
+if __name__ == "__main__":
+    iniciar_programa()
+
+
+
+"""
+def graficos(df):
+    # Graficos para los datos luegos de ser analizados por la funcion de leer, reciben el dataframe
+
     programas_disponibles = df["Programa"].unique()
     programas_seleccionados = st.multiselect("Selecciona los programas académicos", programas_disponibles, default=programas_disponibles[:2])
 
@@ -129,11 +144,6 @@ def iniciar_programa():
     )
     fig_bar.update_layout(xaxis_title="Programa", yaxis_title=categoria_seleccionada)
     st.plotly_chart(fig_bar, use_container_width=True)
-    """
-
-if __name__ == "__main__":
-    iniciar_programa()
 
 
-iniciar_programa()
-
+"""
